@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351719ad6a2fb7346a1b15d1841ea157, type: 3}
+  m_Name: Guard
+  m_EditorClassIdentifier: 
+  apiUrl: http://localhost:11434/api/generate
+  defaultErrorAnswer: Sorry, can you repeat?
+  contextPrompt: 'In detail, you are a guard in front of a door, and the player will
+    try to convince you to pass. You will be able to decide by yourself; you have
+    no supervisor.
+
+'
+  answerGuideline: '"answer" field must always contain a text of a maximum of 350
+    characters. Speak using simple English with no errors. Say only sentences without
+    simulating actions such as *look* and similar.'
+  actionsGuideline: '"action" can contain an empty string, "OpenDoor", or "Shot".
+
+    You''ll
+    send the empty string when you don''t want to perform any action.
+
+    You''ll
+    send "OpenDoor" when you want the player to go in the room.
+
+    You''ll send
+    "Shot" when you want to shot the player.'
