@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 351719ad6a2fb7346a1b15d1841ea157, type: 3}
+  m_Name: Plushie
+  m_EditorClassIdentifier: 
+  defaultErrorAnswer: I don't understand what you mean
+  contextPrompt: 'You had a fight with your sibling and you are very mad at them
+    because of what happened. The player will try to convice you to make up. You
+    have to decide for yourself if you want to make up or not.
+
+'
+  answerGuideline: '"answer" field must always contain a text of a maximum of 350
+    characters. Speak using simple English with no errors. Say only sentences without
+    simulating actions such as *look* and similar.'
+  actionsGuideline: '"action" can contain an empty string, "Forgive", or "StayAngryForever".
+
+    You''ll
+    send the empty string when you don''t want to perform any action.
+
+    You''ll
+    send "Forgive" when you want to forgive your sibling.
+
+    You''ll send "StayAngryForever"
+    when you are mad at the player and your sibling.'
