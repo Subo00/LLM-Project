@@ -17,14 +17,14 @@ namespace Script
 
         [Tooltip("The target model to use for inference")] [SerializeField]
         private Model targetModel = Model.Lama32;
-
+        public string[] flagsSet = new string[]{};
         // The base prompt for basic context and structure guidelines
         private readonly string _basePrompt = "You are an agent simulating a video game character. " +
                                               "You'll respond using a JSON structure " +
-                                              "with two fields: 'answer' and 'action'. " +
+                                              "with two fields: 'answer' and 'flags'. " +
                                               "Always use both fields even if they are empty. " +
                                               "Always be sure to put the JSON fields between the double quotes. " +
-                                              $"This is an example: {JsonUtility.ToJson(new AgentResponse())}";
+                                              $"This is an example: {JsonUtility.ToJson(new AgentResponseJSON())}";
 
         // Keep the conversation context vector with this agent
         private List<long> _context = new();
@@ -46,6 +46,11 @@ namespace Script
         {
             // avoid manual references foreach new agent
             _agentAnswerText = GameObject.FindWithTag("AgentAnswer").GetComponent<TMP_Text>();
+        }
+
+        public void Start()
+        {
+            GameManager.Instance.agents.Add(this);
         }
 
         public void SetSelected(bool selected)
@@ -83,12 +88,12 @@ namespace Script
                                $"{agentConfig.AnswerGuideline}\n" +
                                $"{agentConfig.ActionsGuideline}\n" +
                                $"{specificBehaviour}";
-
+            string flagsArray = "["+String.Join("\",\"",GameManager.Instance.GetOtherAgent(this).flagsSet)+"]";
             var requestData = new RequestData
             {
                 model = targetModel.GetString(),
                 system = systemPrompt,
-                prompt = prompt,
+                prompt = $"{{\"text\":\"{prompt}\",\"flags\":{flagsArray}}}",
                 options = new RequestData.Options { num_ctx = 8192 },
                 stream = false,
                 context = _context
@@ -103,6 +108,7 @@ namespace Script
             request.SetRequestHeader("Content-Type", "application/json");
 
             yield return request.SendWebRequest();
+            Debug.Log(request.downloadHandler.text);
 
             if (request.result == UnityWebRequest.Result.Success)
             {
@@ -116,13 +122,19 @@ namespace Script
                     try
                     {
                         // Parse the agent response
-                        var parsedResponse = JsonUtility.FromJson<AgentResponse>(responseData.response);
+                        AgentResponseJSON parsedResponse = JsonUtility.FromJson<AgentResponseJSON>(responseData.response);
                         _agentAnswerText.text = parsedResponse.answer;
-
-                        // Parse the agent action if available
-                        if (!string.IsNullOrEmpty(parsedResponse.action))
+                        this.flagsSet = parsedResponse.flags;
+                        foreach(var flag in parsedResponse.flags)
                         {
-                            PerformAgentAction(parsedResponse.action);
+                            if(flag == "FORGIVEN")
+                            {
+                                PerformAgentAction("Forgive");
+                            }
+                            else if(flag == "ANGRY_FOREVER")
+                            {
+                                PerformAgentAction("StayAngryForever");
+                            }
                         }
                     }
                     catch (Exception e)

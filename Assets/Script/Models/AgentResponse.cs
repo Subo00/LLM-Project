@@ -8,4 +8,11 @@ namespace Script.Models
         public string answer;
         public string action;
     }
+
+    [Serializable]
+    public class AgentResponseJSON
+    {
+        public string answer;
+        public string[] flags;
+    }
 }
