@@ -169,7 +169,11 @@ namespace Script
                         }
                         catch (Exception e)
                         {
-                            // We didnt get valid json so we try again with a hint to the llm
+                            if (responseData.context != null)
+                            {
+                                _context = responseData.context;
+                            } // Remember what we sent before
+                            // We didnt get valid json so we try again and send an extra hint to the llm
                             problem = ResponseProblem.InvalidJSON;
                             _agentAnswerText.text = agentConfig.DefaultErrorAnswer;
                             Debug.LogError($"Response parsing failed: {responseData.response}");
