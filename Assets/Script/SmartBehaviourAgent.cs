@@ -81,7 +81,7 @@ namespace Script
             StartCoroutine(SendApiRequestCoroutine(message));
         }
 
-        private IEnumerator SendApiRequestCoroutine(string prompt)
+        private IEnumerator SendApiRequestCoroutine(string promptInput)
         {
             var systemPrompt = $"{_basePrompt}\n" +
                                $"{agentConfig.ContextPrompt}\n" +
@@ -89,75 +89,112 @@ namespace Script
                                $"{agentConfig.ActionsGuideline}\n" +
                                $"{specificBehaviour}";
             string flagsArray = "["+String.Join("\",\"",GameManager.Instance.GetOtherAgent(this).flagsSet)+"]";
+            string prompt = $"{{\"answer\":\"{promptInput}\",\"flags\":{flagsArray},'sentBy':'Player'}}";
             var requestData = new RequestData
             {
                 model = targetModel.GetString(),
                 system = systemPrompt,
-                prompt = $"{{\"text\":\"{prompt}\",\"flags\":{flagsArray}}}",
+                prompt = prompt,
                 options = new RequestData.Options { num_ctx = 8192 },
                 stream = false,
                 context = _context
             };
-
-            var jsonBody = JsonUtility.ToJson(requestData);
-
-            using var request = new UnityWebRequest(apiBaseUrl, "POST");
-            var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-
-            yield return request.SendWebRequest();
-            Debug.Log(request.downloadHandler.text);
-
-            if (request.result == UnityWebRequest.Result.Success)
+            ResponseProblem problem = ResponseProblem.None;
+            for(int x = 0; x < 4; x++)
             {
-                var jsonResponse = request.downloadHandler.text;
-
-                // Parse the model server response
-                var responseData = JsonUtility.FromJson<ApiResponseData>(jsonResponse);
-
-                if (!string.IsNullOrEmpty(responseData.response))
+                if(x > 0)
                 {
-                    try
+                    switch(problem)
                     {
-                        // Parse the agent response
-                        AgentResponseJSON parsedResponse = JsonUtility.FromJson<AgentResponseJSON>(responseData.response);
-                        _agentAnswerText.text = parsedResponse.answer;
-                        this.flagsSet = parsedResponse.flags;
-                        foreach(var flag in parsedResponse.flags)
+                        case ResponseProblem.InvalidJSON:
+                            requestData.prompt = $"YOUR RESPONSE MUST BE VALID JSON, TRY AGAIN, and answer in character";
+                            break;
+                        case ResponseProblem.InvalidMessage:
+                            requestData.prompt = $"Try again, you must enter an answer";
+                            break;
+                        case ResponseProblem.InvalidTags:
+                            requestData.prompt = $"Try again, your tags were invalid";
+                            break;
+                        case ResponseProblem.None:
+                            requestData.prompt = $"Try again\n{prompt}";
+                            break;
+                    }
+                }
+                var jsonBody = JsonUtility.ToJson(requestData);
+
+                using var request = new UnityWebRequest(apiBaseUrl, "POST");
+                var bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type", "application/json");
+                yield return request.SendWebRequest();
+                Debug.Log(request.downloadHandler.text);
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    var jsonResponse = request.downloadHandler.text;
+
+                    // Parse the model server response
+                    var responseData = JsonUtility.FromJson<ApiResponseData>(jsonResponse);
+
+                    if (!string.IsNullOrEmpty(responseData.response))
+                    {
+                        try
                         {
-                            if(flag == "FORGIVEN")
+                            // Parse the agent response
+                            AgentResponseJSON parsedResponse = JsonUtility.FromJson<AgentResponseJSON>(responseData.response);
+                            if(parsedResponse.answer == "")
                             {
-                                PerformAgentAction("Forgive");
+                                problem = ResponseProblem.InvalidMessage;
+                                continue;
                             }
-                            else if(flag == "ANGRY_FOREVER")
+                            _agentAnswerText.text = parsedResponse.answer;
+                            this.flagsSet = parsedResponse.flags;
+                            foreach(var flag in parsedResponse.flags)
                             {
-                                PerformAgentAction("StayAngryForever");
+                                if(flag == "FORGIVEN")
+                                {
+                                    PerformAgentAction("Forgive");
+                                }
+                                else if(flag == "ANGRY_FOREVER")
+                                {
+                                    PerformAgentAction("StayAngryForever");
+                                }
                             }
+                            if (responseData.context != null)
+                            {
+                                _context = responseData.context;
+                            }
+                            break; // We got a valid response so we exit out of the loop.
+                        }
+                        catch (Exception e)
+                        {
+                            // We didnt get valid json so we try again with a hint to the llm
+                            problem = ResponseProblem.InvalidJSON;
+                            _agentAnswerText.text = agentConfig.DefaultErrorAnswer;
+                            Debug.LogError($"Response parsing failed: {responseData.response}");
+                            Debug.LogError($"Error: {e}");
+
+                            Debug.Log($"Request: {jsonBody}");
+                            Debug.Log($"Response: {jsonResponse}");
                         }
                     }
-                    catch (Exception e)
-                    {
-                        _agentAnswerText.text = agentConfig.DefaultErrorAnswer;
-                        Debug.LogError($"Response parsing failed: {responseData.response}");
-                        Debug.LogError($"Error: {e}");
 
-                        Debug.Log($"Request: {jsonBody}");
-                        Debug.Log($"Response: {jsonResponse}");
-                    }
                 }
-
-                if (responseData.context != null)
+                else
                 {
-                    _context = responseData.context;
+                    Debug.LogError("Request failed.");
+                    _agentAnswerText.text = agentConfig.DefaultErrorAnswer;
                 }
-            }
-            else
-            {
-                Debug.LogError("Request failed.");
-                _agentAnswerText.text = agentConfig.DefaultErrorAnswer;
             }
         }
+    }
+
+    public enum ResponseProblem
+    {
+        None,
+        InvalidJSON,
+        InvalidTags,
+        InvalidMessage
     }
 }

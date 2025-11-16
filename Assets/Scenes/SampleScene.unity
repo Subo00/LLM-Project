@@ -663,6 +663,7 @@ GameObject:
   - component: {fileID: 71002354}
   - component: {fileID: 71002352}
   - component: {fileID: 71002351}
+  - component: {fileID: 71002358}
   m_Layer: 0
   m_Name: Qua
   m_TagString: SmartAgent
@@ -803,10 +804,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   apiBaseUrl: http://localhost:11434/api/generate
   targetModel: 0
-  agentConfig: {fileID: 11400000, guid: 0de3ce3a3171b0645a34e2e7a2bcf86a, type: 2}
-  specificBehaviour: 'You are Qua, a duck plushie, with a love for advanture.  You
-    are silly, friendly, your sibling is Axy, they were with you since you know exsistence. 
-    You are a not the birghtest of pepole. '
+  flagsSet: []
+  agentConfig: {fileID: 11400000, guid: 0de6803697c53b74196f5cbf5bf10098, type: 2}
+  specificBehaviour: 'You are Matt, a duck plushy who is outgoing and adventurous
+    but stubborn and a bit naive. Your sibling Axy is mad at you because you made
+    fun of them for getting scared easily. You don''t think that you did anything
+    wrong so you refuse to apologize to them. The player wants you to apologize to
+    Axy, but it takes some convincing for you to actually do it. It is up to you
+    whether or not you will actually apologize.
+
+'
 --- !u!23 &71002355
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -873,6 +880,18 @@ Transform:
   - {fileID: 543450653052051093}
   m_Father: {fileID: 606658853}
   m_LocalEulerAnglesHint: {x: 0, y: 10.769, z: 0}
+--- !u!114 &71002358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 71002350}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a8983479433d6d43bd839528ea8ae23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &95461381
 GameObject:
   m_ObjectHideFlags: 0
@@ -4653,6 +4672,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 653415240}
+  - component: {fileID: 653415241}
   m_Layer: 0
   m_Name: Enviroment
   m_TagString: Untagged
@@ -4679,6 +4699,21 @@ Transform:
   - {fileID: 572829955}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &653415241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 653415239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 632805654e9613f448728763f90b85b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  endingPanel: {fileID: 0}
+  text: {fileID: 0}
+  agents: []
 --- !u!1001 &657662461
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6441,6 +6476,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   apiBaseUrl: http://localhost:11434/api/generate
   targetModel: 0
+  flagsSet: []
   agentConfig: {fileID: 11400000, guid: 11287d6fd5e96514fb48617810a64782, type: 2}
   specificBehaviour: You will give ques to the player if the player is not progressing
     or asks for help.
@@ -13306,6 +13342,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   apiBaseUrl: http://localhost:11434/api/generate
   targetModel: 0
+  flagsSet: []
   agentConfig: {fileID: 11400000, guid: 0de3ce3a3171b0645a34e2e7a2bcf86a, type: 2}
   specificBehaviour: You are not very smart, so you can be tricked easily. A fake
     ID is enough to deceive you. You generally never use violence.
@@ -13517,6 +13554,7 @@ GameObject:
   - component: {fileID: 2031768544}
   - component: {fileID: 2031768542}
   - component: {fileID: 2031768541}
+  - component: {fileID: 2031768548}
   m_Layer: 0
   m_Name: Axi
   m_TagString: SmartAgent
@@ -13657,10 +13695,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   apiBaseUrl: http://localhost:11434/api/generate
   targetModel: 0
-  agentConfig: {fileID: 11400000, guid: 0de3ce3a3171b0645a34e2e7a2bcf86a, type: 2}
-  specificBehaviour: You are a non binary axelotel plushie. You are smart but you
-    get scared quickly. Your brother is Qua, a duck plushie. You are both guards
-    guarding the doors.
+  flagsSet: []
+  agentConfig: {fileID: 11400000, guid: 0de6803697c53b74196f5cbf5bf10098, type: 2}
+  specificBehaviour: 'You are Axy, an axolotl plushy who is smart but gets scared
+    easily. You are mad at your brother Matt because he made fun of you for getting
+    scared and want him to apologize. '
 --- !u!23 &2031768545
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -13727,6 +13766,18 @@ Transform:
   - {fileID: 543450653348111203}
   m_Father: {fileID: 606658853}
   m_LocalEulerAnglesHint: {x: 0, y: 18.058, z: 0}
+--- !u!114 &2031768548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2031768540}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5a8983479433d6d43bd839528ea8ae23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &2040469104 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 2b44582523d7fdf48ae9a30dd4e38897,
@@ -14471,6 +14522,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   apiBaseUrl: http://localhost:11434/api/generate
   targetModel: 0
+  flagsSet: []
   agentConfig: {fileID: 11400000, guid: 0de3ce3a3171b0645a34e2e7a2bcf86a, type: 2}
   specificBehaviour: You're just a chill guy. If you are chill, he will let you through.
     If you are not, he will not co-oporate.  (Chill as in relaxed)
